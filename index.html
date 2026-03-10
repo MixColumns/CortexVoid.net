@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Vortex</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        body {
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        #canvas {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 12px;
+            color: #0f0;
+            white-space: pre;
+            text-shadow: 0 0 3px #0f0;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas"></div>
+    <script>
+        const canvas = document.getElementById('canvas');
+        // Inverted so low-intensity (regular) areas are blank instead of '@'
+        //const chars = [' ', '.', ':', '-', '=', '+', 'o', '*', '%', '#', '@'];
+        const chars = [' ', '.', ':', '-', '=', '+', 'o', '*', '%', '#', '@'];
+
+        let width = Math.floor(window.innerWidth / 7);
+        let height = Math.floor(window.innerHeight / 12);
+        let time = 0;
+        
+        function draw() {
+            let output = '';
+            const centerX = width / 2;
+            const centerY = height / 2;
+            
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const dx = x - centerX;
+                    const dy = y - centerY;
+                    
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const angle = Math.atan2(dy, dx);
+                    const maxDist = Math.min(width, height) * 2;
+                    
+                    const normalizedDist = distance / maxDist;
+                    const spiralTightness = 8 / (normalizedDist + 0.5);
+                    const spiral = angle + spiralTightness - time * 0.03;
+                    
+                    const depth = 2 - normalizedDist;
+                    const depthWave = Math.sin(spiral * 3) * 0.3;
+                    
+                    let intensity;
+                    if (normalizedDist < 1) {
+
+                        const swirl = Math.sin(spiral * 3) * 0.5 + 0.5;
+                        const pullEffect = Math.pow(depth, 1.5);
+                        
+                        const ringPattern = Math.sin(distance * 0.5 - time * 0.05) * 0.3 + 0.7;
+                        
+                        intensity = swirl * pullEffect * ringPattern;
+                        
+                        if (normalizedDist < 0.1) {
+                            intensity *= normalizedDist * 10;
+                        }
+                    } else {
+                        intensity = 0;
+                    }
+                    
+                    const charIndex = Math.floor(intensity * (chars.length - 1));
+                    output += chars[Math.max(0, Math.min(chars.length - 1, charIndex))];
+                }
+                output += '\n';
+            }
+            
+            canvas.textContent = output;
+            time += 0.15;
+            requestAnimationFrame(draw);
+        }
+        
+        window.addEventListener('resize', () => {
+            width = Math.floor(window.innerWidth / 7);
+            height = Math.floor(window.innerHeight / 12);
+        });
+        
+        draw();
+    </script>
+</body>
+</html>

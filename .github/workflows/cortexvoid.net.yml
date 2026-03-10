@@ -1,0 +1,25 @@
+name: Deploy CortexVoid.net
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Copy site to VServer via SSH
+      uses: burnett01/rsync-deployments@7.1.0
+      with:
+        switches: -avz --delete --rsync-path="rsync"
+        path: "./index.html"
+        remote_path: ${{ secrets.TARGET }}"/var/www/cortexvoid.net/html"
+        remote_host: ${{ secrets.SERVER_IP }}
+        remote_user: ${{ secrets.SERVER_USER }}
+        remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+        remote_port: ${{ secrets.SSH_PORT }}
