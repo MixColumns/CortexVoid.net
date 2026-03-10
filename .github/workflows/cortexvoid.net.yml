@@ -18,7 +18,7 @@ jobs:
       with:
         switches: -avz --delete --rsync-path="rsync"
         path: "./index.html"
-        remote_path: ${{ secrets.TARGET }}"/var/www/cortexvoid.net/html"
+        remote_path: ${{ secrets.TARGET }}
         remote_host: ${{ secrets.SERVER_IP }}
         remote_user: ${{ secrets.SERVER_USER }}
         remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
